@@ -10,6 +10,7 @@
 /// @docImport 'text_theme.dart';
 library;
 
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -1310,6 +1311,8 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
   void initState() {
     super.initState();
     _updateSelectedIndex();
+    WidgetsBinding.instance.addObserver(this);
+
     if (widget.focusNode == null) {
       _internalNode ??= _createFocusNode();
     }
@@ -1344,6 +1347,17 @@ class _DropdownButtonState<T> extends State<DropdownButton<T>> with WidgetsBindi
       _internalNode ??= _createFocusNode();
     }
     _updateSelectedIndex();
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (_dropdownRoute != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _removeDropdownRoute();
+        _handleTap();
+      });
+
+    }
   }
 
   void _updateSelectedIndex() {
